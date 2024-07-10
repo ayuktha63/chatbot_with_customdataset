@@ -1,3 +1,5 @@
+
+```markdown
 # Chat Bot with Custom Data Set
 
 ## Project Overview
@@ -49,3 +51,17 @@ Feel free to reach out if you have any questions or need further assistance with
 ---
 
 # requirements.txt
+```
+Flask
+numpy
+jsonlib-python3
+tensorflow
+sentence-transformers
+torch
+```
+
+This file lists all the required libraries and frameworks needed for your project. To install these dependencies, use the following command:
+
+```bash
+pip install -r requirements.txt
+```
