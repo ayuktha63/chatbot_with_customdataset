@@ -1,5 +1,4 @@
 
-```markdown
 # Chat Bot with Custom Data Set
 
 ## Project Overview
