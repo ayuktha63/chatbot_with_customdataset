@@ -60,8 +60,9 @@ corpus_embeddings = similarity_model.encode(questions, convert_to_tensor=True)
 
 # Function to format the answer for HTML
 def format_answer(answer):
-    # Replace newline characters with HTML line break
-    return answer.replace('\n', '<br>')
+     # Replace newlines with <br> and format as bullet points
+    answer = answer.replace('\n', '<br>').strip()
+    return '<ul><li>' + '</li><li>'.join(answer.split('<br>')) + '</li></ul>'
 
 # Function to predict and return formatted answer
 def get_answer(user_input):
