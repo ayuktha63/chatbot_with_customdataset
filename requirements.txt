@@ -1,0 +1,6 @@
+Flask
+numpy
+jsonlib-python3
+tensorflow
+sentence-transformers
+torch
