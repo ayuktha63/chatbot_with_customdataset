@@ -7,7 +7,7 @@ from tensorflow.keras.layers import Dense, Embedding, GlobalAveragePooling1D
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from sentence_transformers import SentenceTransformer, util
-import torch  # Import torch for tensor operations
+import torch
 
 app = Flask(__name__)
 
@@ -60,12 +60,49 @@ corpus_embeddings = similarity_model.encode(questions, convert_to_tensor=True)
 
 # Function to format the answer for HTML
 def format_answer(answer):
-     # Replace newlines with <br> and format as bullet points
+    # Replace newlines with <br> and format as bullet points
     answer = answer.replace('\n', '<br>').strip()
     return '<ul><li>' + '</li><li>'.join(answer.split('<br>')) + '</li></ul>'
 
 # Function to predict and return formatted answer
-def get_answer(user_input):
+def get_answer(user_input, name=None, email=None):
+    # Normalize user input for better matching
+    normalized_input = user_input.lower().strip()
+
+    # List of greetings to check against
+    greetings = ['hello', 'hi', 'hey', 'good morning', 'good afternoon', 'good evening','thank you','welcome','thanks','bye','tata']
+    bot_name = 'zeebot'
+
+    # Check if user input matches any greetings
+    for greeting in greetings:
+        if normalized_input == greeting:
+            if greeting == "hello":
+                return f"Hello! How can I assist you today?"
+            elif greeting == "hi":
+                return f"Hi! How can I assist you today?"
+            elif greeting == "hey":
+                return f"Hey! How can I assist you today?"
+            elif greeting == "good morning":
+                return f"Good morning! How can I assist you today?"
+            elif greeting == "thank you" or greeting == "thanks" or greeting == "welcome" or greeting == "bye" or greeting == "tata":
+                return f"You're welcome! I will be here if you have any queries. Bye!"
+            elif greeting == "good afternoon":
+                return f"Good afternoon! How can I assist you today?"
+            elif greeting == "good evening":
+                return f"Good evening! How can I assist you today?"
+
+    # Check if user input includes any additional request with greetings
+    for greeting in greetings:
+        if greeting in normalized_input:
+            if "your name" in normalized_input:
+                return f"Hello! My name is {bot_name}. What can I do for you?"
+            elif "my name" in normalized_input:
+                return f"Hello! Your name is {name}. What can I do for you?"
+            elif "my email" in normalized_input:
+                return f"Hello! Your email is {email}. What can I do for you?"
+            elif "help" in normalized_input or "help me" in normalized_input:
+                return "Ok, let me help you. Please provide details about the issue."
+
     # Use the semantic similarity model to find the closest question
     query_embedding = similarity_model.encode(user_input, convert_to_tensor=True)
     similarities = util.pytorch_cos_sim(query_embedding, corpus_embeddings)
@@ -73,10 +110,20 @@ def get_answer(user_input):
     closest_question_index = closest_n[1][0].item()
     
     # Get the answer and format it
-    answer = answers[closest_question_index]
-    formatted_answer = format_answer(answer)
-    
-    return formatted_answer
+    if similarities[0][closest_question_index] < 0.5:  # Threshold for out-of-scope questions
+        if "your name" in normalized_input:
+            return f"My name is {bot_name}."
+        elif "my name" in normalized_input:
+            return f"Your name is {name}."
+        elif "my email" in normalized_input:
+            return f"Your email is {email}."
+        else:
+            return "I can't understand you. Can you provide more details?"
+    else:
+        answer = answers[closest_question_index]
+        formatted_answer = format_answer(answer)
+        return formatted_answer
+
 
 @app.route('/')
 def home():
