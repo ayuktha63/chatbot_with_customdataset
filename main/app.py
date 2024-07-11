@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify, render_template
+from datetime import datetime
 import numpy as np
 import json
 import tensorflow as tf
@@ -69,11 +70,17 @@ def get_answer(user_input, name="Krishna", email="krishna@gmail.com"):
     # Normalize user input for better matching
     normalized_input = user_input.lower().strip()
 
-    # List of greetings to check against
-    greetings = ['hello', 'hi', 'hey', 'good morning', 'good afternoon', 'good evening','thank you','welcome','thanks','bye','tata']
+    # List of greetings and specific queries
+    greetings = ['hello', 'hi', 'hey', 'good morning', 'good afternoon', 'good evening', 'thank you', 'welcome', 'thanks', 'bye', 'tata']
+    time_queries = ['what is the time now', 'current time','time','what is the time','what is the current time']
+
     bot_name = 'zeebot'
 
-    # Check if user input matches any greetings
+    # Check if user input matches any greetings or specific queries
+    if normalized_input in time_queries:
+        current_time = datetime.now().strftime("%H:%M:%S")
+        return f"The current time is {current_time}"
+
     for greeting in greetings:
         if normalized_input == greeting:
             if greeting == "hello":
