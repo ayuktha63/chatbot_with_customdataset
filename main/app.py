@@ -52,7 +52,7 @@ model.compile(optimizer='adam',
               metrics=['accuracy'])
 
 # Train the model
-model.fit(padded_questions, np.arange(len(answers)), epochs=500, verbose=1)
+model.fit(padded_questions, np.arange(len(answers)), epochs=800, verbose=1)
 
 # Load pre-trained semantic similarity model
 similarity_model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
@@ -65,7 +65,7 @@ def format_answer(answer):
     return '<ul><li>' + '</li><li>'.join(answer.split('<br>')) + '</li></ul>'
 
 # Function to predict and return formatted answer
-def get_answer(user_input, name=None, email=None):
+def get_answer(user_input, name="Krishna", email="krishna@gmail.com"):
     # Normalize user input for better matching
     normalized_input = user_input.lower().strip()
 
@@ -84,8 +84,10 @@ def get_answer(user_input, name=None, email=None):
                 return f"Hey! How can I assist you today?"
             elif greeting == "good morning":
                 return f"Good morning! How can I assist you today?"
-            elif greeting == "thank you" or greeting == "thanks" or greeting == "welcome" or greeting == "bye" or greeting == "tata":
+            elif greeting == "thank you" or greeting == "thanks" or greeting == "welcome":
                 return f"You're welcome! I will be here if you have any queries. Bye!"
+            elif greeting == "bye" or "tata":
+                return f"Goodbye! Have a great day!"
             elif greeting == "good afternoon":
                 return f"Good afternoon! How can I assist you today?"
             elif greeting == "good evening":
@@ -118,7 +120,7 @@ def get_answer(user_input, name=None, email=None):
         elif "my email" in normalized_input:
             return f"Your email is {email}."
         else:
-            return "I can't understand you. Can you provide more details?"
+            return "I am not getting the question correctly or it is not related to my context. Please rephrase the question."
     else:
         answer = answers[closest_question_index]
         formatted_answer = format_answer(answer)
